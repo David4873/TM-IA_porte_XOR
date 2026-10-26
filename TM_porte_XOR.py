@@ -2,10 +2,6 @@ import numpy as np
 from typing import Literal
 import matplotlib.pyplot as plt
 
-
-
-
-
 def run(entres: list, iteration: int, parametre: dict, mode: Literal["entrainement", "test", "executer"], alpha: float = 0.4):
     ## Initialisation des variables
     # Entrées du modèle
@@ -62,6 +58,7 @@ def run(entres: list, iteration: int, parametre: dict, mode: Literal["entraineme
     def apprentisage(yn):
         nonlocal x1, x2, z1, a1, z2, a2, w1, b1, w2, b2
 
+        # Initialistion des gradients
         dz1 = [0.0, 0.0] #[z1, z2]
 
         dw1 = [0.0, 0.0, 0.0, 0.0] #[w11, w12, w21, w22]
@@ -117,12 +114,15 @@ def run(entres: list, iteration: int, parametre: dict, mode: Literal["entraineme
         x = [[0, 0], [0, 1], [1, 0], [1, 1]]
         y = [[0], [1], [1], [0]]
 
-        # 1. Initialiser la liste pour stocker les coûts
+        # Initialise la liste pour stocker les valeurs des coûts
         historique_cout = []
 
+        # Boucle d'apprentisage
         for i in range(0, iteration):
 
             a = []
+
+            # Boucles pour l'entrainer sur chaque cas d'entrainement
             for xn, yn in zip(x, y):
                 # Entrées du modèle
                 x1 = xn[0]
@@ -144,7 +144,7 @@ def run(entres: list, iteration: int, parametre: dict, mode: Literal["entraineme
 
         mode = "test"
 
-        # 3. Générer le graphique
+        # 3. Générer le graphique de l'évolution du cout en fonction du nombre d'itération
         plt.figure(figsize=(8, 5))
         plt.plot(range(iteration), historique_cout, label="Fonction de coût", color="blue")
         plt.title("Évolution du coût en fonction des itérations")
@@ -169,6 +169,8 @@ def run(entres: list, iteration: int, parametre: dict, mode: Literal["entraineme
     
             propagation()
 
+            # Convertit la probabilité de la réponse en réponse absolue pour une meilleure lisibilité
+            # Exemple : 0.56 -> 1; 0.16 -> 0; 0.5 -> 0; 0.93 -> 1
             prediction_binaire = int(a2[0] > 0.5)
 
             a.append([prediction_binaire])
@@ -190,6 +192,8 @@ def run(entres: list, iteration: int, parametre: dict, mode: Literal["entraineme
 
         propagation()
 
+        # Convertit la probabilité de la réponse en réponse absolue pour une meilleure lisibilité
+        # Exemple : 0.56 -> 1; 0.16 -> 0; 0.5 -> 0; 0.93 -> 1
         a2[0] = int(a2[0] > 0.5)
 
         print(f"Entrée : {[x1, x2]} ->  Prédit : {a2[0]}")
@@ -198,7 +202,7 @@ def run(entres: list, iteration: int, parametre: dict, mode: Literal["entraineme
     return
 
 
-parametre = {
+parametre_default = {
     # Première couche (2 neurones en entrée, 2 neurones cachés)
     "w1": [0.1, 0.6,  # [w11, w12] -> Poids connectés au premier neurone caché
         1.5, 0.3      # [w21, w22] -> Poids connectés au second neurone caché
@@ -211,5 +215,7 @@ parametre = {
     "b2": [1.6]        # [b1] -> Biais du neurone de sortie
 }
 
-run([1, 0], 500, parametre, "entrainement", 0.2)
+
+
+run([1, 0], 500, parametre_default, "entrainement", 0.2)
 
